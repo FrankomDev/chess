@@ -69,3 +69,16 @@ void Board::clear_square(int x, int y) {
     else
         squares[7-x][7-y] = {Piece::Nothing, Team::None};
 }
+
+void Board::capture_piece(int x, int y) {
+    if (get_square(x, y).piece != Piece::Nothing) {
+        int value = pieces.db[get_square(x, y).piece].value;
+
+        if (get_square(x, y).team == Team::White)
+            score.black += value;
+        else
+            score.white += value;
+
+        clear_square(x, y);
+    }
+}

@@ -26,8 +26,10 @@ void Game::handle_mouse_clicks() {
                         if (x == currently_holding.second.x && y == currently_holding.second.y) {
                             board.change_square(x, y, currently_holding.first);
                             clear_holding();
-                        } else {
-
+                        } else if (pieces.db[currently_holding.first.piece].can_move(currently_holding.second, {x, y})) {
+                            board.change_square(x, y, currently_holding.first);
+                            clear_holding();
+                            //board.currently_moves = (board.currently_moves == Team::White) ? Team::Black : Team::White;
                         }
                     }
                     return;

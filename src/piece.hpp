@@ -1,5 +1,7 @@
 #pragma once
 
+#include "utils.hpp"
+#include <functional>
 #include <raylib.h>
 #include <unordered_map>
 
@@ -27,9 +29,18 @@ struct BoardSquare {
 struct PieceDetails {
     Texture *texture_black = nullptr;
     Texture *texture_white = nullptr;
+    std::function<bool(Vector2Int current_position, Vector2Int new_position)> can_move;
+    int value;
 };
 
 extern struct Pieces {
     std::unordered_map<Piece, PieceDetails> db;
     void init();
 } pieces;
+
+bool pawn_can_move(Vector2Int current_position, Vector2Int new_position);
+bool bishop_can_move(Vector2Int current_position, Vector2Int new_position);
+bool knight_can_move(Vector2Int current_position, Vector2Int new_position);
+bool rook_can_move(Vector2Int current_position, Vector2Int new_position);
+bool queen_can_move(Vector2Int current_position, Vector2Int new_position);
+bool king_can_move(Vector2Int current_position, Vector2Int new_position);
