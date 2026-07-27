@@ -34,7 +34,57 @@ bool pawn_can_move(Vector2Int current_position, Vector2Int new_position) {
     return false;
 }
 
-bool bishop_can_move(Vector2Int current_position, Vector2Int new_position) {return false;}
+bool bishop_can_move(Vector2Int current_position, Vector2Int new_position) {
+    Vector2Int distance = {
+        .x = std::max(current_position.x, new_position.x) - std::min(current_position.x, new_position.x),
+        .y = std::max(current_position.y, new_position.y) - std::min(current_position.y, new_position.y),
+    };
+    enum {
+       UpLeft, UpRight, DownLeft, DownRight
+    } direction;
+
+    if (distance.x != distance.y)
+        return false;
+    else if (current_position.x < new_position.x && current_position.y > new_position.y)
+        direction = UpRight;
+    else if (current_position.x > new_position.x && current_position.y > new_position.y)
+        direction = UpLeft;
+    else if (current_position.x < new_position.x && current_position.y < new_position.y)
+        direction = DownRight;
+    else if (current_position.x > new_position.x && current_position.y < new_position.y)
+        direction = DownLeft;
+
+    for (int i=0; i<distance.x; i++) {
+        switch (direction) {
+            case UpLeft:
+                if (board.get_square(current_position.x-i, current_position.y-i).piece != Piece::Nothing)
+                    return false;
+                break;
+            case UpRight:
+                if (board.get_square(current_position.x+i, current_position.y-i).piece != Piece::Nothing)
+                    return false;
+                break;
+            case DownLeft:
+                if (board.get_square(current_position.x-i, current_position.y+i).piece != Piece::Nothing)
+                    return false;
+                break;
+            case DownRight:
+                if (board.get_square(current_position.x+i, current_position.y+i).piece != Piece::Nothing)
+                    return false;
+                break;
+            default: break;
+        }
+    }
+
+    if (board.get_square(new_position.x, new_position.y).piece == Piece::Nothing)
+        return true;
+    else if (board.get_square(new_position.x, new_position.y).team != board.currently_moves) {
+        board.capture_piece(new_position.x, new_position.y);
+        return true;
+    }
+
+    return false;
+}
 
 bool knight_can_move(Vector2Int current_position, Vector2Int new_position) {
     Vector2Int distance = {
@@ -108,5 +158,111 @@ bool rook_can_move(Vector2Int current_position, Vector2Int new_position) {
     return false;
 }
 
-bool queen_can_move(Vector2Int current_position, Vector2Int new_position) {return false;}
-bool king_can_move(Vector2Int current_position, Vector2Int new_position) {return false;}
+bool queen_can_move(Vector2Int current_position, Vector2Int new_position) {
+    Vector2Int distance = {
+        .x = std::max(current_position.x, new_position.x) - std::min(current_position.x, new_position.x),
+        .y = std::max(current_position.y, new_position.y) - std::min(current_position.y, new_position.y),
+    };
+    enum {
+       Up, Down, Right, Left, UpLeft, UpRight, DownLeft, DownRight
+    } direction;
+
+    if (current_position.x != new_position.x && current_position.y != new_position.y) {
+        if (distance.x != distance.y)
+            return false;
+        else if (current_position.x < new_position.x && current_position.y > new_position.y)
+            direction = UpRight;
+        else if (current_position.x > new_position.x && current_position.y > new_position.y)
+            direction = UpLeft;
+        else if (current_position.x < new_position.x && current_position.y < new_position.y)
+            direction = DownRight;
+        else if (current_position.x > new_position.x && current_position.y < new_position.y)
+            direction = DownLeft;
+    } else if (current_position.x == new_position.x && current_position.y != new_position.y)
+        direction = (current_position.y > new_position.y) ? Up : Down;
+    else if (current_position.x != new_position.x && current_position.y == new_position.y)
+        direction = (current_position.x > new_position.x) ? Left : Right;
+
+    switch (direction) {
+        case Up: {
+            for (int y=current_position.y; y>new_position.y; y--) {
+                if (board.get_square(current_position.x, y).piece != Piece::Nothing)
+                    return false;
+            }
+            break;
+        };
+        case Down: {
+            for (int y=current_position.y; y<new_position.y; y++) {
+                if (board.get_square(current_position.x, y).piece != Piece::Nothing)
+                    return false;
+            }
+            break;
+        };
+        case Left: {
+            for (int x=current_position.x; x>new_position.x; x--) {
+                if (board.get_square(x, current_position.y).piece != Piece::Nothing)
+                    return false;
+            }
+            break;
+        };
+        case Right: {
+            for (int x=current_position.x; x<new_position.x; x++) {
+                if (board.get_square(x, current_position.y).piece != Piece::Nothing)
+                    return false;
+            }
+            break;
+        };
+        default: break;
+    }
+
+    if (direction == UpRight || direction == UpLeft || direction == DownLeft || direction == DownRight) {
+        for (int i=0; i<distance.x; i++) {
+            switch (direction) {
+                case UpLeft:
+                    if (board.get_square(current_position.x-i, current_position.y-i).piece != Piece::Nothing)
+                        return false;
+                    break;
+                case UpRight:
+                    if (board.get_square(current_position.x+i, current_position.y-i).piece != Piece::Nothing)
+                        return false;
+                    break;
+                case DownLeft:
+                    if (board.get_square(current_position.x-i, current_position.y+i).piece != Piece::Nothing)
+                        return false;
+                    break;
+                case DownRight:
+                    if (board.get_square(current_position.x+i, current_position.y+i).piece != Piece::Nothing)
+                        return false;
+                    break;
+                default: break;
+            }
+        }
+    }
+
+    if (board.get_square(new_position.x, new_position.y).piece == Piece::Nothing)
+        return true;
+    else if (board.get_square(new_position.x, new_position.y).team != board.currently_moves) {
+        board.capture_piece(new_position.x, new_position.y);
+        return true;
+    }
+
+    return false;
+}
+
+bool king_can_move(Vector2Int current_position, Vector2Int new_position) {
+    Vector2Int distance = {
+        .x = std::max(current_position.x, new_position.x) - std::min(current_position.x, new_position.x),
+        .y = std::max(current_position.y, new_position.y) - std::min(current_position.y, new_position.y),
+    };
+
+    if (distance.x <= 1 && distance.y <= 1) {
+        if (board.get_square(new_position.x, new_position.y).piece == Piece::Nothing)
+            return true;
+        else if (board.get_square(new_position.x, new_position.y).team != board.currently_moves) {
+            board.capture_piece(new_position.x, new_position.y);
+            return true;
+        }
+    }
+
+    return false;
+}

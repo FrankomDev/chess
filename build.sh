@@ -3,7 +3,12 @@
 mkdir build
 cd build
 
-g++ ../src/*.cpp -lraylib -o chess -Wall -Wextra
-./chess
+if [[ -z $(ldconfig -p | grep raylib) ]]
+then
+    echo "Install Raylib!!!!"
+else
+    g++ ../src/*.cpp -lraylib -o chess -Wall -Wextra
+    ./chess
+fi
 
 cd ..

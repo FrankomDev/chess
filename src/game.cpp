@@ -23,6 +23,7 @@ void Game::handle_mouse_clicks() {
                             board.clear_square(x, y);
                         }
                     } else {
+                        //printf("X: %d Y: %d\n", x, y);
                         if (x == currently_holding.second.x && y == currently_holding.second.y) {
                             board.change_square(x, y, currently_holding.first);
                             clear_holding();
