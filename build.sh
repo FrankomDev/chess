@@ -7,7 +7,7 @@ if [[ -z $(ldconfig -p | grep raylib) ]]
 then
     echo "Install Raylib!!!!"
 else
-    g++ ../src/*.cpp -lraylib -o chess -Wall -Wextra
+    g++ ../src/*.cpp -lraylib -o chess -Wall -Wextra -g
     ./chess
 fi
 

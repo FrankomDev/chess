@@ -41,11 +41,13 @@ void Board::draw() {
             DrawRectangle(position.x, position.y, SQUARE_SIZE, SQUARE_SIZE, (color == White) ? (Color){234, 236, 208, 255} : (Color){118, 149, 86, 255});
             color = (color == White) ? Black : White;
 
-            BoardSquare square = get_square(x, y);
-            if (square.piece != Piece::Nothing) {
-                Texture texture = (square.team == Team::White) ? *pieces.db[square.piece].texture_white : *pieces.db[square.piece].texture_black;
-                //DrawTexture(texture, position.x, position.y, WHITE);
-                DrawTextureEx(texture, {position.x+50-texture.width*SCALE/2, position.y}, 0, SCALE, WHITE);
+            if (piece_in_move != nullptr) {
+                BoardSquare square = get_square(x, y);
+                if (square.piece != Piece::Nothing && (x != piece_in_move->x || y != piece_in_move->y)) {
+                    Texture texture = (square.team == Team::White) ? *pieces.db[square.piece].texture_white : *pieces.db[square.piece].texture_black;
+                    //DrawTexture(texture, position.x, position.y, WHITE);
+                    DrawTextureEx(texture, {position.x+50-texture.width*SCALE/2, position.y}, 0, SCALE, WHITE);
+                }
             }
         }
         color = (color == White) ? Black : White;
@@ -71,7 +73,7 @@ void Board::clear_square(int x, int y) {
 }
 
 void Board::capture_piece(int x, int y) {
-    if (get_square(x, y).piece != Piece::Nothing) {
+    if (get_square(x, y).piece != Piece::Nothing && get_square(x, y).piece != Piece::King) {
         int value = pieces.db[get_square(x, y).piece].value;
 
         if (get_square(x, y).team == Team::White)
@@ -81,4 +83,36 @@ void Board::capture_piece(int x, int y) {
 
         clear_square(x, y);
     }
+}
+
+bool Board::is_checkmate() {
+    Team currently_moves_backup = currently_moves;
+    currently_moves = (currently_moves == Team::White) ? Team::Black : Team::White;
+    Vector2Int king_position;
+
+    for (int x=0; x<8; x++) {
+        for (int y=0; y<8; y++) {
+            BoardSquare square = get_square(x, y);
+            if (square.piece == Piece::King && square.team == currently_moves_backup) {
+                king_position = {x, y};
+            }
+        }
+    }
+
+    bool checkmate = false;
+    for (int x=0; x<8; x++) {
+        for (int y=0; y<8; y++) {
+            BoardSquare square = get_square(x, y);
+            if (square.piece != Piece::Nothing && square.team != currently_moves_backup) {
+                if (pieces.db[square.piece].can_move({x, y}, king_position, false)) {
+                    checkmate = true;
+                    break;
+                }
+            }
+        }
+        if (checkmate) break;
+    }
+
+    currently_moves = currently_moves_backup;
+    return checkmate;
 }

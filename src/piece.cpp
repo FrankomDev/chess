@@ -15,7 +15,7 @@ void Pieces::init() {
     db[Piece::King]   = {&resource_manager.black_king, &resource_manager.white_king, king_can_move, 0};
 }
 
-bool pawn_can_move(Vector2Int current_position, Vector2Int new_position) {
+bool pawn_can_move(Vector2Int current_position, Vector2Int new_position, bool can_capture) {
     int max_hop = (current_position.y == 6) ? 2 : 1;
     BoardSquare new_position_square = board.get_square(new_position.x, new_position.y);
 
@@ -27,14 +27,14 @@ bool pawn_can_move(Vector2Int current_position, Vector2Int new_position) {
     // capture piece
     else if (current_position.y - new_position.y == 1 && (current_position.x - new_position.x == 1 || current_position.x - new_position.x == -1 )
         && new_position_square.team != board.currently_moves && new_position_square.piece != Piece::Nothing) {
-            board.capture_piece(new_position.x, new_position.y);
+            if (can_capture) board.capture_piece(new_position.x, new_position.y);
             return true;
     }
 
     return false;
 }
 
-bool bishop_can_move(Vector2Int current_position, Vector2Int new_position) {
+bool bishop_can_move(Vector2Int current_position, Vector2Int new_position, bool can_capture) {
     Vector2Int distance = {
         .x = std::max(current_position.x, new_position.x) - std::min(current_position.x, new_position.x),
         .y = std::max(current_position.y, new_position.y) - std::min(current_position.y, new_position.y),
@@ -54,7 +54,7 @@ bool bishop_can_move(Vector2Int current_position, Vector2Int new_position) {
     else if (current_position.x > new_position.x && current_position.y < new_position.y)
         direction = DownLeft;
 
-    for (int i=0; i<distance.x; i++) {
+    for (int i=1; i<distance.x; i++) {
         switch (direction) {
             case UpLeft:
                 if (board.get_square(current_position.x-i, current_position.y-i).piece != Piece::Nothing)
@@ -79,14 +79,14 @@ bool bishop_can_move(Vector2Int current_position, Vector2Int new_position) {
     if (board.get_square(new_position.x, new_position.y).piece == Piece::Nothing)
         return true;
     else if (board.get_square(new_position.x, new_position.y).team != board.currently_moves) {
-        board.capture_piece(new_position.x, new_position.y);
+        if (can_capture) board.capture_piece(new_position.x, new_position.y);
         return true;
     }
 
     return false;
 }
 
-bool knight_can_move(Vector2Int current_position, Vector2Int new_position) {
+bool knight_can_move(Vector2Int current_position, Vector2Int new_position, bool can_capture) {
     Vector2Int distance = {
         .x = std::max(current_position.x, new_position.x) - std::min(current_position.x, new_position.x),
         .y = std::max(current_position.y, new_position.y) - std::min(current_position.y, new_position.y),
@@ -96,7 +96,7 @@ bool knight_can_move(Vector2Int current_position, Vector2Int new_position) {
         if (board.get_square(new_position.x, new_position.y).piece == Piece::Nothing)
             return true;
         else if (board.get_square(new_position.x, new_position.y).team != board.currently_moves) {
-            board.capture_piece(new_position.x, new_position.y);
+            if (can_capture) board.capture_piece(new_position.x, new_position.y);
             return true;
         }
     }
@@ -104,7 +104,7 @@ bool knight_can_move(Vector2Int current_position, Vector2Int new_position) {
     return false;
 }
 
-bool rook_can_move(Vector2Int current_position, Vector2Int new_position) {
+bool rook_can_move(Vector2Int current_position, Vector2Int new_position, bool can_capture) {
     enum {
        Up, Down, Right, Left
     } direction;
@@ -118,28 +118,28 @@ bool rook_can_move(Vector2Int current_position, Vector2Int new_position) {
 
     switch (direction) {
         case Up: {
-            for (int y=current_position.y; y>new_position.y; y--) {
+            for (int y=current_position.y-1; y>new_position.y; y--) {
                 if (board.get_square(current_position.x, y).piece != Piece::Nothing)
                     return false;
             }
             break;
         };
         case Down: {
-            for (int y=current_position.y; y<new_position.y; y++) {
+            for (int y=current_position.y+1; y<new_position.y; y++) {
                 if (board.get_square(current_position.x, y).piece != Piece::Nothing)
                     return false;
             }
             break;
         };
         case Left: {
-            for (int x=current_position.x; x>new_position.x; x--) {
+            for (int x=current_position.x-1; x>new_position.x; x--) {
                 if (board.get_square(x, current_position.y).piece != Piece::Nothing)
                     return false;
             }
             break;
         };
         case Right: {
-            for (int x=current_position.x; x<new_position.x; x++) {
+            for (int x=current_position.x+1; x<new_position.x; x++) {
                 if (board.get_square(x, current_position.y).piece != Piece::Nothing)
                     return false;
             }
@@ -151,14 +151,14 @@ bool rook_can_move(Vector2Int current_position, Vector2Int new_position) {
     if (board.get_square(new_position.x, new_position.y).piece == Piece::Nothing)
         return true;
     else if (board.get_square(new_position.x, new_position.y).team != board.currently_moves) {
-        board.capture_piece(new_position.x, new_position.y);
+        if (can_capture) board.capture_piece(new_position.x, new_position.y);
         return true;
     }
 
     return false;
 }
 
-bool queen_can_move(Vector2Int current_position, Vector2Int new_position) {
+bool queen_can_move(Vector2Int current_position, Vector2Int new_position, bool can_capture) {
     Vector2Int distance = {
         .x = std::max(current_position.x, new_position.x) - std::min(current_position.x, new_position.x),
         .y = std::max(current_position.y, new_position.y) - std::min(current_position.y, new_position.y),
@@ -185,28 +185,28 @@ bool queen_can_move(Vector2Int current_position, Vector2Int new_position) {
 
     switch (direction) {
         case Up: {
-            for (int y=current_position.y; y>new_position.y; y--) {
+            for (int y=current_position.y-1; y>new_position.y; y--) {
                 if (board.get_square(current_position.x, y).piece != Piece::Nothing)
                     return false;
             }
             break;
         };
         case Down: {
-            for (int y=current_position.y; y<new_position.y; y++) {
+            for (int y=current_position.y+1; y<new_position.y; y++) {
                 if (board.get_square(current_position.x, y).piece != Piece::Nothing)
                     return false;
             }
             break;
         };
         case Left: {
-            for (int x=current_position.x; x>new_position.x; x--) {
+            for (int x=current_position.x-1; x>new_position.x; x--) {
                 if (board.get_square(x, current_position.y).piece != Piece::Nothing)
                     return false;
             }
             break;
         };
         case Right: {
-            for (int x=current_position.x; x<new_position.x; x++) {
+            for (int x=current_position.x+1; x<new_position.x; x++) {
                 if (board.get_square(x, current_position.y).piece != Piece::Nothing)
                     return false;
             }
@@ -216,7 +216,7 @@ bool queen_can_move(Vector2Int current_position, Vector2Int new_position) {
     }
 
     if (direction == UpRight || direction == UpLeft || direction == DownLeft || direction == DownRight) {
-        for (int i=0; i<distance.x; i++) {
+        for (int i=1; i<distance.x; i++) {
             switch (direction) {
                 case UpLeft:
                     if (board.get_square(current_position.x-i, current_position.y-i).piece != Piece::Nothing)
@@ -242,14 +242,14 @@ bool queen_can_move(Vector2Int current_position, Vector2Int new_position) {
     if (board.get_square(new_position.x, new_position.y).piece == Piece::Nothing)
         return true;
     else if (board.get_square(new_position.x, new_position.y).team != board.currently_moves) {
-        board.capture_piece(new_position.x, new_position.y);
+        if (can_capture) board.capture_piece(new_position.x, new_position.y);
         return true;
     }
 
     return false;
 }
 
-bool king_can_move(Vector2Int current_position, Vector2Int new_position) {
+bool king_can_move(Vector2Int current_position, Vector2Int new_position, bool can_capture) {
     Vector2Int distance = {
         .x = std::max(current_position.x, new_position.x) - std::min(current_position.x, new_position.x),
         .y = std::max(current_position.y, new_position.y) - std::min(current_position.y, new_position.y),
@@ -259,7 +259,7 @@ bool king_can_move(Vector2Int current_position, Vector2Int new_position) {
         if (board.get_square(new_position.x, new_position.y).piece == Piece::Nothing)
             return true;
         else if (board.get_square(new_position.x, new_position.y).team != board.currently_moves) {
-            board.capture_piece(new_position.x, new_position.y);
+            if (can_capture) board.capture_piece(new_position.x, new_position.y);
             return true;
         }
     }

@@ -14,10 +14,13 @@ struct Game {
         Game() {
             pieces.init();
             board.init();
+            board.piece_in_move = &currently_holding.second;
         };
 
     private:
         std::pair<BoardSquare, Vector2Int> currently_holding = {{Piece::Nothing, Team::None}, {-1, -1}};
         void clear_holding();
+        void change_moving_team();
         void handle_mouse_clicks();
+        void make_move(int x, int y);
 };

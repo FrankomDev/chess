@@ -1,6 +1,7 @@
 #pragma once
 
 #include "piece.hpp"
+#include "utils.hpp"
 
 #define SQUARE_SIZE 100
 
@@ -12,8 +13,10 @@ extern struct Board {
         void change_square(int x, int y, BoardSquare new_square);
         void clear_square(int x, int y);
         void capture_piece(int x, int y);
+        bool is_checkmate();
 
         Team currently_moves = Team::White;
+        Vector2Int *piece_in_move = nullptr; //pointer to game currently_holding second value
     private:
         BoardSquare squares[8][8];
         struct {

@@ -29,7 +29,7 @@ struct BoardSquare {
 struct PieceDetails {
     Texture *texture_black = nullptr;
     Texture *texture_white = nullptr;
-    std::function<bool(Vector2Int current_position, Vector2Int new_position)> can_move;
+    std::function<bool(Vector2Int current_position, Vector2Int new_position, bool can_capture)> can_move;
     int value;
 };
 
@@ -38,9 +38,9 @@ extern struct Pieces {
     void init();
 } pieces;
 
-bool pawn_can_move(Vector2Int current_position, Vector2Int new_position);
-bool bishop_can_move(Vector2Int current_position, Vector2Int new_position);
-bool knight_can_move(Vector2Int current_position, Vector2Int new_position);
-bool rook_can_move(Vector2Int current_position, Vector2Int new_position);
-bool queen_can_move(Vector2Int current_position, Vector2Int new_position);
-bool king_can_move(Vector2Int current_position, Vector2Int new_position);
+bool pawn_can_move(Vector2Int current_position, Vector2Int new_position, bool can_capture);
+bool bishop_can_move(Vector2Int current_position, Vector2Int new_position, bool can_capture);
+bool knight_can_move(Vector2Int current_position, Vector2Int new_position, bool can_capture);
+bool rook_can_move(Vector2Int current_position, Vector2Int new_position, bool can_capture);
+bool queen_can_move(Vector2Int current_position, Vector2Int new_position, bool can_capture);
+bool king_can_move(Vector2Int current_position, Vector2Int new_position, bool can_capture);
