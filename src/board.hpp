@@ -17,10 +17,11 @@ extern struct Board {
 
         Team currently_moves = Team::White;
         std::pair<BoardSquare, Vector2Int> *piece_in_move = nullptr; //pointer to game currently_holding
-    private:
-        BoardSquare squares[8][8];
+
         struct {
             int white = 0;
             int black = 0;
         } score;
+    private:
+        BoardSquare squares[8][8];
 } board;

@@ -3,6 +3,7 @@
 #include "piece.hpp"
 #include "utils.hpp"
 #include <raylib.h>
+#include <string>
 
 void Game::handle_mouse_clicks() {
 
@@ -41,6 +42,17 @@ void Game::update() {
 
 void Game::draw() {
     board.draw();
+
+    DrawLineEx({0, 800}, {800, 800}, 5.0f, BLACK);
+
+    std::string white = "White: " + std::to_string(board.score.white);
+    std::string black = std::to_string(board.score.black) + " :Black";
+    Font font = GetFontDefault();
+    Vector2 white_v = MeasureTextEx(font, white.c_str(), 40, 4);
+    Vector2 black_v = MeasureTextEx(font, black.c_str(), 40, 4);
+
+    DrawText(white.c_str(), 20, 850-white_v.y/2, 40, BLACK);
+    DrawText(black.c_str(), 780-black_v.x, 850-black_v.y/2, 40, BLACK);
 
     if (currently_holding.first.piece != Piece::Nothing) {
         Vector2 mouse = GetMousePosition();

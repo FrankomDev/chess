@@ -4,7 +4,7 @@
 
 int main() {
 
-    InitWindow(800, 800, "Chess");
+    InitWindow(800, 900, "Chess");
     SetTargetFPS(60);
     resource_manager.load();
     Game game;
@@ -14,7 +14,7 @@ int main() {
         game.update();
 
         BeginDrawing();
-        ClearBackground(GRAY);
+        ClearBackground({234, 236, 208, 255});
         game.draw();
 
         EndDrawing();
