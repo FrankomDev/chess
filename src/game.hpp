@@ -1,6 +1,5 @@
 #pragma once
 
-#include "piece.hpp"
 #include "board.hpp"
 #include "utils.hpp"
 #include <raylib.h>
@@ -14,7 +13,7 @@ struct Game {
         Game() {
             pieces.init();
             board.init();
-            board.piece_in_move = &currently_holding.second;
+            board.piece_in_move = &currently_holding;
         };
 
     private:

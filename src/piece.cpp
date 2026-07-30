@@ -18,20 +18,24 @@ void Pieces::init() {
 bool pawn_can_move(Vector2Int current_position, Vector2Int new_position, bool can_capture) {
     int max_hop = (current_position.y == 6) ? 2 : 1;
     BoardSquare new_position_square = board.get_square(new_position.x, new_position.y);
+    bool can_move = false;
 
     // going 1-2 hop forward
     if (current_position.x == new_position.x && (current_position.y - new_position.y == 1 || current_position.y - new_position.y == max_hop)
         && new_position_square.piece == Piece::Nothing)
-            return true;
+            can_move = true;
 
     // capture piece
     else if (current_position.y - new_position.y == 1 && (current_position.x - new_position.x == 1 || current_position.x - new_position.x == -1 )
         && new_position_square.team != board.currently_moves && new_position_square.piece != Piece::Nothing) {
             if (can_capture) board.capture_piece(new_position.x, new_position.y);
-            return true;
+            can_move = true;
     }
 
-    return false;
+    if (can_move && new_position.y == 0)
+        board.piece_in_move->first.piece = Piece::Queen;
+
+    return can_move;
 }
 
 bool bishop_can_move(Vector2Int current_position, Vector2Int new_position, bool can_capture) {

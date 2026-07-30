@@ -16,7 +16,7 @@ extern struct Board {
         bool is_checkmate();
 
         Team currently_moves = Team::White;
-        Vector2Int *piece_in_move = nullptr; //pointer to game currently_holding second value
+        std::pair<BoardSquare, Vector2Int> *piece_in_move = nullptr; //pointer to game currently_holding
     private:
         BoardSquare squares[8][8];
         struct {

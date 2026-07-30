@@ -43,7 +43,7 @@ void Board::draw() {
 
             if (piece_in_move != nullptr) {
                 BoardSquare square = get_square(x, y);
-                if (square.piece != Piece::Nothing && (x != piece_in_move->x || y != piece_in_move->y)) {
+                if (square.piece != Piece::Nothing && (x != piece_in_move->second.x || y != piece_in_move->second.y)) {
                     Texture texture = (square.team == Team::White) ? *pieces.db[square.piece].texture_white : *pieces.db[square.piece].texture_black;
                     //DrawTexture(texture, position.x, position.y, WHITE);
                     DrawTextureEx(texture, {position.x+50-texture.width*SCALE/2, position.y}, 0, SCALE, WHITE);
